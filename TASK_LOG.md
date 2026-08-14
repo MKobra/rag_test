@@ -62,3 +62,18 @@
 - PostgreSQL/pgvector запущен через Docker Compose.
 - Расширение `vector` и таблица `documents` успешно созданы.
 - `GET /api/health`: HTTP 200.
+- HTTP upload через FastAPI TestClient: успешно, ответ `201`, `chunk_count=1`.
+
+### Исправления после runtime-проверки
+
+- `ec63661` — добавлены `uploaded_at`, корректный PGVector-фильтр и строгая очистка источников при отсутствии ответа.
+
+### Итоговое состояние перед слиянием
+
+- Тесты: 5 passed.
+- Синтаксис Python: пройден.
+- Конфигурация Docker Compose: пройдена.
+- PostgreSQL/pgvector: работает локально.
+- Индексация и similarity search: проверены на тестовом документе.
+- HTTP upload: проверен.
+- Секрет `.env` не отслеживается Git.
