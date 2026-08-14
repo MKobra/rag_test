@@ -14,3 +14,4 @@ pypdf>=5,<6
 docx2txt>=0.8,<1
 pytest>=8,<9
 httpx>=0.28,<1
+email-validator>=2.2,<3
