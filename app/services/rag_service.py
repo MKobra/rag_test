@@ -5,7 +5,7 @@ from langchain_groq import ChatGroq
 
 from app.config import get_settings
 from app.db import get_connection
-from app.schemas.questions import AnswerResponse, Source
+from app.schemas.questions import AnswerResponse
 from app.services.vector_store import get_vector_store
 
 
@@ -38,7 +38,7 @@ def answer_question(document_id: UUID, question: str) -> AnswerResponse:
     results = get_vector_store().similarity_search_with_score(
         question,
         k=get_settings().retrieval_k,
-        filter={"document_id": {"$eq": str(document_id)}},
+        filter={"document_id": str(document_id)},
     )
     relevant = [
         (document, score)
@@ -69,6 +69,6 @@ def answer_question(document_id: UUID, question: str) -> AnswerResponse:
         for source in response.sources
         if str(source.chunk_id) in allowed_chunks
     ]
-    if response.found and not response.sources:
+    if not response.found or not response.sources:
         return AnswerResponse(answer="", found=False, sources=[])
     return response

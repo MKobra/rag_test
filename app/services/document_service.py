@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -40,11 +41,12 @@ def index_file(filename: str, content: bytes) -> dict:
         )
 
     add_chunks(chunks, document_id)
+    uploaded_at = datetime.now(timezone.utc)
     with get_connection() as connection:
         connection.execute(
             """
-            INSERT INTO documents (id, filename, topic, file_type, chunk_count)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO documents (id, filename, topic, file_type, chunk_count, uploaded_at)
+            VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (
                 document_id,
@@ -52,6 +54,7 @@ def index_file(filename: str, content: bytes) -> dict:
                 topic,
                 Path(filename).suffix.lower().lstrip("."),
                 len(chunks),
+                uploaded_at,
             ),
         )
         connection.commit()
@@ -61,6 +64,7 @@ def index_file(filename: str, content: bytes) -> dict:
         "filename": filename,
         "topic": topic,
         "file_type": Path(filename).suffix.lower().lstrip("."),
+        "uploaded_at": uploaded_at,
         "chunk_count": len(chunks),
     }
 
