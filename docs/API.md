@@ -1,18 +1,18 @@
 # API
 
-## `GET /health`
+## `GET /api/health`
 
 Проверяет, что приложение запущено.
 
-## `GET /documents`
+## `GET /api/documents`
 
 Возвращает список документов-вкладок.
 
-## `POST /documents`
+## `POST /api/documents`
 
 Принимает `multipart/form-data` с полем `file`.
 
-## `POST /documents/{document_id}/questions`
+## `POST /api/documents/{document_id}/questions`
 
 Принимает JSON:
 
