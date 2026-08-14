@@ -10,6 +10,12 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
     retrieval_k: int = 5
     retrieval_distance_threshold: float = 0.65
+    jwt_secret: str = "change-this-secret-in-production"
+    access_token_expire_minutes: int = 60 * 24
+    max_upload_size_bytes: int = 10 * 1024 * 1024
+    max_questions_per_minute: int = 20
+    max_uploads_per_hour: int = 10
+    max_documents: int = 30
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

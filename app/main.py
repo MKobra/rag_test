@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app.api.documents import router as documents_router
+from app.api.auth import router as auth_router
+from app.api.chats import router as chats_router
 from app.api.questions import router as questions_router
 from app.db import initialize_database
 
@@ -16,5 +18,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(title="RAG Document Service", lifespan=lifespan)
 app.include_router(documents_router)
+app.include_router(auth_router)
+app.include_router(chats_router)
 app.include_router(questions_router)
 app.mount("/", StaticFiles(directory="app/static", html=True), name="static")
