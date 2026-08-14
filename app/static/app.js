@@ -1,4 +1,4 @@
-const state = { token: localStorage.getItem("atlas_token"), user: null, documents: [], selected: null, conversation: null, register: false };
+const state = { token: localStorage.getItem("ragatlas_token"), user: null, documents: [], selected: null, conversation: null, register: false };
 const $ = (selector) => document.querySelector(selector);
 
 async function request(url, options = {}) {
@@ -14,7 +14,7 @@ async function request(url, options = {}) {
 function setAuthenticated(auth) {
   state.token = auth.access_token;
   state.user = auth;
-  localStorage.setItem("atlas_token", state.token);
+  localStorage.setItem("ragatlas_token", state.token);
   $("#auth-view").classList.add("hidden");
   $("#app-view").classList.remove("hidden");
   $("#user-email").textContent = auth.email;
@@ -23,7 +23,7 @@ function setAuthenticated(auth) {
 
 function logout() {
   state.token = null;
-  localStorage.removeItem("atlas_token");
+  localStorage.removeItem("ragatlas_token");
   $("#app-view").classList.add("hidden");
   $("#auth-view").classList.remove("hidden");
 }
@@ -101,7 +101,7 @@ function renderMessages(messages) {
   $("#messages").replaceChildren(...messages.map((message) => {
     const wrapper = document.createElement("div");
     wrapper.className = `message ${message.role}`;
-    const meta = message.role === "user" ? "Вы" : "Atlas · ответ по документу";
+    const meta = message.role === "user" ? "Вы" : "RagAtlas · ответ по документу";
     wrapper.innerHTML = `<div class="message-meta">${meta}</div><div>${escapeHtml(message.content)}</div>`;
     if (message.sources?.length) {
       const sources = document.createElement("div");
@@ -130,7 +130,7 @@ $("#auth-form").addEventListener("submit", async (event) => {
 
 $("#auth-switch").addEventListener("click", () => {
   state.register = !state.register;
-  $("#auth-title").textContent = state.register ? "Создать аккаунт" : "Войти в Atlas";
+  $("#auth-title").textContent = state.register ? "Создать аккаунт" : "Войти в RagAtlas";
   $("#auth-submit").textContent = state.register ? "Зарегистрироваться" : "Войти";
   $("#auth-switch").textContent = state.register ? "У меня уже есть аккаунт" : "Создать аккаунт";
   $("#auth-password").autocomplete = state.register ? "new-password" : "current-password";
@@ -153,7 +153,7 @@ $("#question-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const text = $("#question").value.trim();
   if (!text || !state.conversation) return;
-  $("#question-status").textContent = "Atlas ищет ответ в документе...";
+  $("#question-status").textContent = "RagAtlas ищет ответ в документе...";
   $("#question").disabled = true; $("#question-form button").disabled = true;
   try { await request(`/api/conversations/${state.conversation.id}/questions`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: text }) }); $("#question").value = ""; await loadConversation(state.conversation.id); $("#question-status").textContent = ""; }
   catch (error) { $("#question-status").textContent = error.message; $("#question").disabled = false; $("#question-form button").disabled = false; }
