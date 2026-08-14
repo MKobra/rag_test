@@ -1,0 +1,32 @@
+:root {
+  color: #e9eee7;
+  background: #111612;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; }
+.layout { display: grid; grid-template-columns: 320px 1fr; min-height: 100vh; }
+.sidebar { padding: 40px 28px; background: #182019; border-right: 1px solid #2b382d; }
+.content { max-width: 900px; width: 100%; padding: 72px 8vw; }
+.eyebrow { color: #9fc66d; font-size: 11px; letter-spacing: .16em; margin: 0 0 14px; }
+h1, h2 { font-family: Georgia, serif; font-weight: 400; margin: 0; }
+h1 { font-size: 38px; }
+h2 { font-size: clamp(36px, 6vw, 74px); line-height: .98; }
+.muted { color: #99a49a; line-height: 1.6; }
+.upload { display: block; margin: 30px 0 18px; padding: 14px 16px; background: #d5ed9b; color: #172013; border-radius: 3px; cursor: pointer; font-weight: 700; }
+.upload input { display: none; }
+.tabs { display: grid; gap: 6px; margin-top: 30px; }
+.tab { border: 1px solid transparent; background: transparent; color: #c6d0c5; padding: 13px; text-align: left; cursor: pointer; border-radius: 3px; }
+.tab:hover, .tab.active { background: #253226; border-color: #435944; color: #d5ed9b; }
+.status { color: #d5ed9b; min-height: 22px; font-size: 14px; }
+.question-form { display: grid; gap: 12px; margin-top: 58px; }
+textarea { width: 100%; resize: vertical; border: 1px solid #3d4b3d; border-radius: 3px; padding: 16px; color: #e9eee7; background: #182019; font: inherit; }
+button { justify-self: start; border: 0; border-radius: 3px; padding: 13px 20px; background: #d5ed9b; color: #172013; font-weight: 700; cursor: pointer; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.answer-card { margin-top: 45px; padding: 26px; background: #182019; border-left: 3px solid #9fc66d; }
+.answer-label { color: #9fc66d; font-size: 11px; letter-spacing: .16em; }
+#answer { font-size: 20px; line-height: 1.6; }
+.source { margin-top: 18px; padding-top: 14px; border-top: 1px solid #344035; color: #aeb9ad; font-size: 14px; line-height: 1.5; }
+.hidden { display: none; }
+@media (max-width: 760px) { .layout { grid-template-columns: 1fr; } .sidebar { padding: 28px 20px; } .content { padding: 45px 20px; } }

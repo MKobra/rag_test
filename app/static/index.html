@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Документы и ответы</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <aside class="sidebar">
+        <p class="eyebrow">RAG DOCUMENTS</p>
+        <h1>База знаний</h1>
+        <p class="muted">Загрузите документ и задавайте вопросы только по его содержимому.</p>
+        <label class="upload">
+          <span>Загрузить документ</span>
+          <input id="file-input" type="file" accept=".txt,.docx,.pdf" />
+        </label>
+        <p id="upload-status" class="status"></p>
+        <nav id="document-tabs" class="tabs" aria-label="Документы"></nav>
+      </aside>
+      <section class="content">
+        <div class="content-header">
+          <p class="eyebrow">SELECTED DOCUMENT</p>
+          <h2 id="document-title">Выберите документ</h2>
+          <p id="document-meta" class="muted">Вопросы будут ограничены выбранной вкладкой.</p>
+        </div>
+        <form id="question-form" class="question-form">
+          <textarea id="question" rows="3" placeholder="Например: какие правила описаны в документе?" disabled></textarea>
+          <button type="submit" disabled>Получить ответ</button>
+        </form>
+        <p id="question-status" class="status"></p>
+        <article id="answer-card" class="answer-card hidden">
+          <div class="answer-label">ОТВЕТ</div>
+          <p id="answer"></p>
+          <div id="sources"></div>
+        </article>
+      </section>
+    </main>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
