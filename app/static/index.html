@@ -3,38 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Документы и ответы</title>
+    <title>Atlas · личная база знаний</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <main class="layout">
-      <aside class="sidebar">
-        <p class="eyebrow">RAG DOCUMENTS</p>
-        <h1>База знаний</h1>
-        <p class="muted">Загрузите документ и задавайте вопросы только по его содержимому.</p>
-        <label class="upload">
-          <span>Загрузить документ</span>
-          <input id="file-input" type="file" accept=".txt,.docx,.pdf" />
-        </label>
-        <p id="upload-status" class="status"></p>
-        <nav id="document-tabs" class="tabs" aria-label="Документы"></nav>
-      </aside>
-      <section class="content">
-        <div class="content-header">
-          <p class="eyebrow">SELECTED DOCUMENT</p>
-          <h2 id="document-title">Выберите документ</h2>
-          <p id="document-meta" class="muted">Вопросы будут ограничены выбранной вкладкой.</p>
-        </div>
-        <form id="question-form" class="question-form">
-          <textarea id="question" rows="3" placeholder="Например: какие правила описаны в документе?" disabled></textarea>
-          <button type="submit" disabled>Получить ответ</button>
+    <section id="auth-view" class="auth-view">
+      <div class="auth-art"><span>ATLAS</span><strong>Смысл<br />внутри<br />документов.</strong><small>Личная база знаний с поиском по контексту.</small></div>
+      <div class="auth-card">
+        <p class="eyebrow">PERSONAL KNOWLEDGE SPACE</p>
+        <h1 id="auth-title">Войти в Atlas</h1>
+        <p class="muted">Документы, темы и разговоры в одном спокойном рабочем пространстве.</p>
+        <form id="auth-form">
+          <label>Email<input id="auth-email" type="email" required autocomplete="email" /></label>
+          <label>Пароль<input id="auth-password" type="password" minlength="8" required autocomplete="current-password" /></label>
+          <label id="confirm-password-label" class="hidden">Повторите пароль<input id="auth-password-confirm" type="password" minlength="8" autocomplete="new-password" /></label>
+          <button type="submit" class="primary" id="auth-submit">Войти</button>
         </form>
-        <p id="question-status" class="status"></p>
-        <article id="answer-card" class="answer-card hidden">
-          <div class="answer-label">ОТВЕТ</div>
-          <p id="answer"></p>
-          <div id="sources"></div>
-        </article>
+        <p id="auth-status" class="status"></p>
+        <button id="auth-switch" class="text-button" type="button">Создать аккаунт</button>
+      </div>
+    </section>
+
+    <main id="app-view" class="app-view hidden">
+      <aside class="sidebar">
+        <div class="brand"><span class="brand-mark">A</span><span>ATLAS</span></div>
+        <div class="sidebar-intro"><p class="eyebrow">YOUR ARCHIVE</p><p>Документы,<br />которые отвечают.</p></div>
+        <label class="upload-card"><span class="upload-icon">＋</span><strong>Добавить документ</strong><small>PDF · DOCX · TXT · до 10 МБ</small><input id="file-input" type="file" accept=".txt,.docx,.pdf" /></label>
+        <p id="upload-status" class="status"></p>
+        <div class="section-heading"><span>Документы</span><span id="document-count">0</span></div>
+        <nav id="document-tabs" class="document-tabs"></nav>
+        <div class="user-bar"><span id="user-email"></span><button id="logout" class="text-button" type="button">Выйти</button></div>
+      </aside>
+
+      <section class="workspace">
+        <header class="workspace-head">
+          <div><p class="eyebrow">SELECTED DOCUMENT</p><h2 id="document-title">Выберите документ</h2><p id="document-filename" class="filename">Загрузите первый файл, чтобы начать.</p></div>
+          <div class="status-pill"><span></span>Контекст защищён</div>
+        </header>
+        <div class="chat-layout">
+          <aside class="chat-list"><div class="section-heading"><span>Разговоры</span><button id="new-chat" class="small-button" type="button" disabled>＋ Новый</button></div><div id="conversation-tabs" class="conversation-tabs"></div></aside>
+          <section class="chat-panel">
+            <div id="messages" class="messages"><div class="empty-chat"><span>✦</span><h3>Начните разговор</h3><p>Задайте вопрос по выбранному документу.<br />Ответ будет основан только на его содержимом.</p></div></div>
+            <form id="question-form" class="composer"><textarea id="question" rows="1" placeholder="Спросите о документе..." disabled></textarea><button type="submit" aria-label="Отправить" disabled>↑</button></form>
+            <p id="question-status" class="status"></p>
+          </section>
+        </div>
       </section>
     </main>
     <script src="/app.js" defer></script>
