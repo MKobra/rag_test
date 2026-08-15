@@ -7,12 +7,19 @@ from app.config import get_settings
 from app.services.embeddings import get_embeddings
 
 
+def _sqlalchemy_connection_string() -> str:
+    url = get_settings().database_url
+    if url.startswith("postgresql://"):
+        return url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return url
+
+
 @lru_cache
 def get_vector_store() -> PGVector:
     return PGVector(
         embeddings=get_embeddings(),
         collection_name="document_chunks",
-        connection=get_settings().database_url,
+        connection=_sqlalchemy_connection_string(),
         use_jsonb=True,
     )
 
