@@ -103,6 +103,27 @@ def index_file(filename: str, content: bytes, owner_id: UUID) -> dict:
     }
 
 
+def delete_document(document_id: UUID, owner_id: UUID) -> None:
+    with get_connection() as connection:
+        row = connection.execute(
+            "SELECT file_type FROM documents WHERE id = %s AND owner_id = %s",
+            (document_id, owner_id),
+        ).fetchone()
+        if not row:
+            raise ValueError("Документ не найден")
+        connection.execute(
+            "DELETE FROM langchain_pg_embedding WHERE cmetadata->>'document_id' = %s",
+            (str(document_id),),
+        )
+        connection.execute("DELETE FROM documents WHERE id = %s", (document_id,))
+        connection.commit()
+
+    file_type = row[0]
+    if file_type:
+        path = Path(get_settings().upload_dir) / f"{document_id}.{file_type}"
+        path.unlink(missing_ok=True)
+
+
 def list_documents(owner_id: UUID) -> list[dict]:
     with get_connection() as connection:
         rows = connection.execute(

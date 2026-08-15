@@ -33,12 +33,19 @@ function showUploadError(error) { $("#upload-status").textContent = error.messag
 function renderDocuments() {
   $("#document-count").textContent = state.documents.length;
   $("#document-tabs").replaceChildren(...state.documents.map((item) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = `tab ${state.selected?.id === item.id ? "active" : ""}`;
+    wrapper.type = "button";
+    wrapper.innerHTML = `<strong>${escapeHtml(item.topic)}</strong><small>${escapeHtml(item.filename)}</small>`;
     const button = document.createElement("button");
-    button.className = `tab ${state.selected?.id === item.id ? "active" : ""}`;
+    button.className = "tab-delete";
     button.type = "button";
-    button.innerHTML = `<strong>${escapeHtml(item.topic)}</strong><small>${escapeHtml(item.filename)}</small>`;
-    button.addEventListener("click", () => selectDocument(item));
-    return button;
+    button.title = "Удалить документ";
+    button.textContent = "×";
+    button.addEventListener("click", (event) => { event.stopPropagation(); deleteDocument(item); });
+    wrapper.appendChild(button);
+    wrapper.addEventListener("click", () => selectDocument(item));
+    return wrapper;
   }));
 }
 
@@ -70,6 +77,29 @@ async function selectDocument(item) {
   renderConversations(conversations);
   if (conversations.length) await loadConversation(conversations[0].id);
   else await createConversation();
+}
+
+async function deleteDocument(item) {
+  if (!confirm(`Удалить документ «${item.topic}»? Разговоры по нему тоже будут удалены.`)) return;
+  try {
+    await request(`/api/documents/${item.id}`, { method: "DELETE" });
+    state.documents = state.documents.filter((d) => d.id !== item.id);
+    if (state.selected?.id === item.id) {
+      state.selected = null;
+      state.conversation = null;
+      $("#document-title").textContent = "Выберите документ";
+      $("#document-filename").textContent = "Загрузите первый файл, чтобы начать.";
+      $("#new-chat").disabled = true;
+      $("#question").disabled = true;
+      $("#question-form button").disabled = true;
+      renderConversations([]);
+      renderMessages([]);
+    }
+    renderDocuments();
+    if (!state.documents.length) await loadDocuments();
+  } catch (error) {
+    $("#upload-status").textContent = error.message;
+  }
 }
 
 async function createConversation() {

@@ -1,11 +1,12 @@
 from pathlib import Path
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 
 from app.auth import get_current_user_id
 from app.config import get_settings
 from app.limits import enforce_limit
-from app.services.document_service import index_file, list_documents
+from app.services.document_service import delete_document, index_file, list_documents
 from app.schemas.documents import DocumentSummary, DocumentUploadResponse
 
 router = APIRouter(prefix="/api", tags=["documents"])
@@ -39,3 +40,11 @@ async def upload_document(
         return index_file(file.filename, content, user_id)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
+
+
+@router.delete("/documents/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
+def remove_document(document_id: UUID, user_id=Depends(get_current_user_id)) -> None:
+    try:
+        delete_document(document_id, user_id)
+    except ValueError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
