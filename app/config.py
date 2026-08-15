@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     upload_dir: str = "uploads"
     retrieval_k: int = 5
-    retrieval_distance_threshold: float = 0.65
+    retrieval_distance_threshold: float = 0.80
     jwt_secret: str = "change-this-secret-in-production"
     access_token_expire_minutes: int = 60 * 24
     max_upload_size_bytes: int = 10 * 1024 * 1024

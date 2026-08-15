@@ -67,7 +67,7 @@ def answer_question(document_id: UUID, conversation_id: UUID, owner_id: UUID, qu
 
     model = ChatGroq(
         api_key=api_key,
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         temperature=0,
     ).with_structured_output(AnswerResponse)
     response = model.invoke(
