@@ -6,7 +6,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://rag:rag@localhost:5432/rag"
     groq_api_key: str = ""
-    embedding_model: str = "intfloat/multilingual-e5-small"
+    hf_token: str = ""
+    embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     upload_dir: str = "uploads"
     retrieval_k: int = 5
     retrieval_distance_threshold: float = 0.65

@@ -149,13 +149,28 @@ $("#file-input").addEventListener("change", async () => {
   finally { $("#file-input").value = ""; }
 });
 
+function resizeQuestion() {
+  const field = $("#question");
+  field.style.height = "auto";
+  field.style.height = `${Math.min(field.scrollHeight, 160)}px`;
+  field.style.overflowY = field.scrollHeight > 160 ? "auto" : "hidden";
+}
+
+$("#question").addEventListener("input", resizeQuestion);
+$("#question").addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    $("#question-form").requestSubmit();
+  }
+});
+
 $("#question-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const text = $("#question").value.trim();
   if (!text || !state.conversation) return;
   $("#question-status").textContent = "RagAtlas ищет ответ в документе...";
   $("#question").disabled = true; $("#question-form button").disabled = true;
-  try { await request(`/api/conversations/${state.conversation.id}/questions`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: text }) }); $("#question").value = ""; await loadConversation(state.conversation.id); $("#question-status").textContent = ""; }
+  try { await request(`/api/conversations/${state.conversation.id}/questions`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: text }) }); $("#question").value = ""; resizeQuestion(); await loadConversation(state.conversation.id); $("#question-status").textContent = ""; }
   catch (error) { $("#question-status").textContent = error.message; $("#question").disabled = false; $("#question-form button").disabled = false; }
 });
 

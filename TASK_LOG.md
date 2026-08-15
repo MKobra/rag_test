@@ -85,3 +85,50 @@
 Добавлена генерация короткой темы документа через Groq с fallback на имя файла. Исходное имя файла сохраняется и показывается под темой.
 
 Интерфейс переработан в визуальный стиль цифрового архива: авторизация, документы, чаты, сообщения ассистента, источники и responsive layout.
+
+## Деплой и вынос эмбеддингов в Hugging Face Inference API
+
+### Цель
+
+Задеплоить RagAtlas бесплатно и добиться запуска на ограниченных ресурсах облачного тарифа.
+
+### Рассмотренные варианты и причины выбора
+
+- **Hugging Face Spaces** — отвергнут: бесплатный тариф в аккаунте не даёт Docker SDK.
+- **Northflank (выбран)** — бесплатный Web Service из GitHub-репозитория, Postgres addon с предустановленным pgvector (`CREATE EXTENSION vector`), интеграция через GitHub без SSO GitLab.
+- **Render + Neon** — альтернатива, не выбранная после того, как пользователь остановился на Northflank.
+
+### Проблемы при деплое и их решения
+
+1. `Connection refused` на старте: приложение подключалось к дефолтному `localhost:5432`, потому что `DATABASE_URL` не был задан. Решение: создан Postgres addon Northflank, connection string передана как `DATABASE_URL` в env сервиса.
+2. `upstream connect error ... Connection refused` от прокси: Northflank стучался в health check на `/health`, а endpoint живёт на `/api/health` из-за префикса `/api` у роутера (`app/api/documents.py`). Решение: в конфигурации сервиса указан health check path `/api/health`, порт `8000`.
+3. `Process terminated` через несколько минут после старта: контейнер убивался за нездоровость из-за неверного health check path. После исправления контейнер стабилен.
+4. «Процессор и ОЗУ не справляются»: тариф Northflank 0.2 CPU / 512 МБ RAM не тянет локальную модель `sentence-transformers` (torch ~2 ГБ). Решение: эмбеддинги вынесены в Hugging Face Inference API.
+
+### Изменения в коде (рабочая директория, без коммита и push)
+
+- `app/config.py`: добавлено поле `hf_token`.
+- `app/services/embeddings.py`: заменён `SentenceTransformer` на `HuggingFaceEndpointEmbeddings` (Inference API); E5-префиксы `passage:`/`query:` удалены.
+- `app/config.py`: `embedding_model` изменён на `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`.
+- `requirements.txt`: удалён `sentence-transformers` (уходит torch).
+- `.env.example`: обновлена модель эмбеддингов.
+- `app/static/app.js`: исправлен composer — textarea авто-расширяется, Enter отправляет вопрос, Shift+Enter делает перенос строки.
+- Документация: `docs/ALGORITHM.md`, `docs/ARCHITECTURE.md`, `README.md` обновлены под удалённые эмбеддинги.
+
+### Почему именно эта модель
+
+`paraphrase-multilingual-MiniLM-L12-v2` поддерживает таск `feature-extraction` через бесплатный Inference API и возвращает 384-мерные векторы — размерность совпадает с исходной схемой pgvector. `intfloat/multilingual-e5-small` через тот же API возвращает только скоры sentence-similarity, а не векторы, поэтому не подходит.
+
+### Проверки
+
+- `pytest`: 9 passed.
+- `node --check app/static/app.js`: пройден.
+- Эмбеддинги через Inference API проверены: запрос и документы возвращают 384-мерные векторы, косинусная близость похожих текстов ~0.72, непохожих ~−0.06.
+- Локальная БД: 891 чанк, размерность векторов 384.
+
+### Ограничения и риски
+
+- Бесплатный Inference API имеет лимиты запросов.
+- Задержка эмбеддинга ~0.5–1 c на запрос.
+- `GROQ_API_KEY` ранее раскрыт в чате, требуется замена; `JWT_SECRET` пока дефолтный.
+- Часть чанков в локальной БД была создана старой моделью e5 — их векторы несовместимы с новой моделью, документы нужно переиндексировать.

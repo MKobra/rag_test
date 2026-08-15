@@ -9,7 +9,6 @@ langchain-huggingface>=0.1,<1
 langchain-postgres>=0.0.13,<1
 langchain-groq>=0.3,<1
 langchain-text-splitters>=0.3,<1
-sentence-transformers>=3.3,<4
 pypdf>=5,<6
 docx2txt>=0.8,<1
 pytest>=8,<9
