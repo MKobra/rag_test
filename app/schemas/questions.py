@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from pydantic import BaseModel, Field
 
 
@@ -8,7 +6,7 @@ class QuestionRequest(BaseModel):
 
 
 class Source(BaseModel):
-    chunk_id: UUID
+    chunk_id: str
     page: int | None = None
     quote: str
 
